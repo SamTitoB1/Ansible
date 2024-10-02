@@ -1,0 +1,23 @@
+---
+  - name: config t3
+    hosts: mikrotik                       
+    gather_facts: no                      
+    tasks:
+      - name: Configure basic settings on t3
+        community.routeros.command: 
+          commands:
+            #HOSTNAME
+            - /system identity set name=xx_t3
+            #OSPF CONF ROUTER ID 
+            - /routing ospf instance add name=V2inst 
+            - /routing ospf instance add version=2 
+            - /routing ospf instance add router-id=3.3.3.3
+            #OSPF CONF BACKBONE
+            - /routing ospf area add name=BACKBONE
+            - /routing ospf area add area-id=0.0.0.0
+            - /routing ospf area add instance=V2inst
+          
+            #PUTTING INT IN OSPF
+            - /routing ospf network add network=192.168.100.0/24 area=V2inst            
+        when: inventory_hostname == '192.168.100.151'  
+
